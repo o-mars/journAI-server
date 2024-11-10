@@ -8,6 +8,12 @@ export class RealtimeRelay {
     this.wss = null;
   }
 
+  setWebSocketServer(wss) {
+    this.wss = wss;
+    this.wss.on("connection", this.connectionHandler.bind(this));
+    this.log(`WebSocket server ready to handle connections.`);
+  }
+
   listen(port) {
     this.wss = new WebSocketServer({ port });
     this.wss.on('connection', this.connectionHandler.bind(this));
@@ -24,7 +30,7 @@ export class RealtimeRelay {
     const url = new URL(req.url, `http://${req.headers.host}`);
     const pathname = url.pathname;
 
-    if (pathname !== '/') {
+    if (pathname !== '/openai') {
       this.log(`Invalid pathname: "${pathname}"`);
       ws.close();
       return;
